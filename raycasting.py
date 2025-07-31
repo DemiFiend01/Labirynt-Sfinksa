@@ -10,6 +10,7 @@ class RayCasting:
         self.objects_to_render = []
         self.textures = self.game.object_renderer.wall_textures
 
+
     def getObjectsToRender(self):
         self.objects_to_render = []
         for ray, values in enumerate(self.ray_casting_result):

@@ -63,8 +63,18 @@ class Player:
         pg.draw.circle(self.game.screen, 'red',
                        (self.x * 30, self.y * 30), 7)
 
+    def mouse_control(self):
+        mx,my = pg.mouse.get_pos()
+        if mx < MOUSE_BORDER_LEFT or mx > MOUSE_BORDER_RIGHT:
+            pg.mouse.set_pos(HALF_WIDTH,HALF_HEIGHT) #clamp the mouse to the center if we go out of the borders
+        self.rel = pg.mouse.get_rel()[0] #get the value of the relative mouse movement since the last frame
+        self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, self.rel)) #clamp the value
+        self.angle += self.rel * MOUSE_SENSITIVITY * self.game.delta_time #move the angle based on the new mouse movement and sensitivity and delta time
+
     def update(self):
-        self.movement()
+        if self.game.check_map == False:
+            self.movement()
+            self.mouse_control()
 
     @property  # basically a getter function
     def get_pos(self):

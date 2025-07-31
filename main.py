@@ -14,10 +14,11 @@ from object_renderer import *
 
 class Game:
     def __init__(self):  # constructor of the class, self is like this from c++
-        pg.init()
+        # pg.init()
         # now we set the resolution of our screen
-        self.screen = pg.display.set_mode(RES)
+        self.screen = pg.display.set_mode(RES, pg.RESIZABLE)
         self.clock = pg.time.Clock()  # we initialise our clock
+        pg.mouse.set_visible(False)
         self.delta_time = 1
         self.check_map = False
         self.new_game()
