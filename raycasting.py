@@ -10,13 +10,12 @@ class RayCasting:
         self.objects_to_render = []
         self.textures = self.game.object_renderer.wall_textures
 
-
     def getObjectsToRender(self):
         self.objects_to_render = []
         for ray, values in enumerate(self.ray_casting_result):
             depth, proj_height, texture, offset = values
 
-            normalized_depth = min((depth / MAX_DEPTH)**0.25, 1.0)
+            normalized_depth = min((depth / MAX_DEPTH)**0.75, 1.0)
             level = int((1.0 - normalized_depth) * (10 - 1))
             level = max(0, min(level, 10 - 1))
 

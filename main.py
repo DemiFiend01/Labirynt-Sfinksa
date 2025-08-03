@@ -11,6 +11,7 @@ from player import *
 from raycasting import *
 from object_renderer import *
 from sprite_object import *
+from object_handler import *
 
 
 class Game:
@@ -24,32 +25,38 @@ class Game:
         self.check_map = False
         self.new_game()
         self.Sphinx_room = False
+        # self.switch = True
 
     def new_game(self):  # initialise some stuff
         self.map = Map(self)  # because map takes this Game as an argument
         self.player = Player(self)
         self.object_renderer = ObjectRenderer(self)
         self.raycasting = RayCasting(self)
-        self.static_sprite = SpriteObject(
-            self, path="resources/textures/DOOM_bush.png", pos=(1.5, 1.5))
+        self.object_handler = ObjectHandler(self)
+        # self.static_sprite = SpriteObject(w
+        #     self, path="resources/textures/DOOM_bush.png", pos=(1.5, 1.5))
+        # self.animated_sprite = AnimatedSprite(
+        #     self, path="resources/textures/animated_lamp.png", pos=(5, 1.5), no_of_rows=1, no_of_cols=6)
 
     def update(self):
         self.player.update()
         self.raycasting.update()
         if self.Sphinx_room:
-            self.static_sprite.update()
+            self.object_handler.update()  # update all objects that are in the sphinx roomsssss
         # update the clock once per framerate aka 60 fps given
         # update the delta_time, it is a float
         self.delta_time = self.clock.tick(FPS)
         # display the information behind fps on our screen
         pg.display.set_caption(f'{self.clock.get_fps(): .1f}')
 
+        # or self.switch:
         if (self.player.get_map_pos == (self.map.goal_x + 1, self.map.goal_y+1)):
             print("You got there!")
             self.map.teleport_to_sphinx()
-            self.player.set_map_pos(2, 2)
+            self.player.set_map_pos(2.5, 2.5)
             self.player.set_angle(0)  # reset
             self.Sphinx_room = True
+            # self.switch = False
 
     def draw(self):  # render
         self.screen.fill('black')  # clear the window
