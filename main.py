@@ -10,6 +10,7 @@ from map import *
 from player import *
 from raycasting import *
 from object_renderer import *
+from sprite_object import *
 
 
 class Game:
@@ -22,16 +23,21 @@ class Game:
         self.delta_time = 1
         self.check_map = False
         self.new_game()
+        self.Sphinx_room = False
 
     def new_game(self):  # initialise some stuff
         self.map = Map(self)  # because map takes this Game as an argument
         self.player = Player(self)
         self.object_renderer = ObjectRenderer(self)
         self.raycasting = RayCasting(self)
+        self.static_sprite = SpriteObject(
+            self, path="resources/textures/DOOM_bush.png", pos=(1.5, 1.5))
 
     def update(self):
         self.player.update()
         self.raycasting.update()
+        if self.Sphinx_room:
+            self.static_sprite.update()
         # update the clock once per framerate aka 60 fps given
         # update the delta_time, it is a float
         self.delta_time = self.clock.tick(FPS)
@@ -43,6 +49,7 @@ class Game:
             self.map.teleport_to_sphinx()
             self.player.set_map_pos(2, 2)
             self.player.set_angle(0)  # reset
+            self.Sphinx_room = True
 
     def draw(self):  # render
         self.screen.fill('black')  # clear the window

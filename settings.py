@@ -4,12 +4,12 @@ import pygame as pg
 # global variables, signed as constants, but remember that technically they can be changed (as in Python doesn't stop you)
 pg.init()
 info = pg.display.Info()
-RES = WIDTH, HEIGHT = info.current_w, info.current_h # RES is a tuple now
+RES = WIDTH, HEIGHT = info.current_w, info.current_h  # RES is a tuple now
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 FPS = 120
 
-PLAYER_POS = 1, 1  # on the mini_map
+PLAYER_POS = 1.5, 1.5  # on the mini_map
 PLAYER_ANGLE = 0
 PLAYER_SPEED = 0.004
 PLAYER_ROT_SPEED = 0.002  # rotation speed
@@ -19,7 +19,7 @@ MOUSE_MAX_REL = 40
 MOUSE_BORDER_LEFT = 50
 MOUSE_BORDER_RIGHT = WIDTH - MOUSE_BORDER_LEFT
 
-FLOOR_COLOUR = (0,20,0)
+FLOOR_COLOUR = (0, 20, 0)
 
 FOV = math.pi / 3
 HALF_FOV = FOV / 2  # float division

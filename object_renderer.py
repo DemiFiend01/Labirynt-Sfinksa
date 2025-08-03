@@ -7,23 +7,28 @@ class ObjectRenderer:
         self.game = game
         self.screen = game.screen
         self.wall_textures = self.loadWallTextures()
-        self.sky_image = self.getTexture('resources/textures/night_sky.png', (WIDTH, HALF_HEIGHT))
-        self.sky_offset = 0 #because it will depend on our movement 
+        self.sky_image = self.getTexture(
+            'resources/textures/night_sky.png', (WIDTH, HALF_HEIGHT))
+        self.sky_offset = 0  # because it will depend on our movement
 
     def draw_background(self):
-        self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH #calc the offset based on the rel mouse movement
-        self.screen.blit(self.sky_image, (-self.sky_offset,0))
-        self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH,0))
+        # calc the offset based on the rel mouse movement
+        self.sky_offset = (self.sky_offset + 4.5 *
+                           self.game.player.rel) % WIDTH
+        self.screen.blit(self.sky_image, (-self.sky_offset, 0))
+        self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH, 0))
 
-        #FLOOR
-        pg.draw.rect(self.screen, FLOOR_COLOUR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
+        # FLOOR
+        pg.draw.rect(self.screen, FLOOR_COLOUR,
+                     (0, HALF_HEIGHT, WIDTH, HEIGHT))
 
     def draw(self):
         self.draw_background()
         self.renderGameObjects()
 
     def renderGameObjects(self):
-        list_objects = self.game.raycasting.objects_to_render
+        list_objects = sorted(
+            self.game.raycasting.objects_to_render, key=lambda t: t[0], reverse=True)
         for depth, image, pos in list_objects:
             self.screen.blit(image, pos)
 
