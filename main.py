@@ -12,6 +12,7 @@ from raycasting import *
 from object_renderer import *
 from sprite_object import *
 from object_handler import *
+from AI_model import *
 
 
 class Game:
@@ -25,6 +26,7 @@ class Game:
         self.check_map = False
         self.new_game()
         self.Sphinx_room = False
+        # print(result)
         # self.switch = True
 
     def new_game(self):  # initialise some stuff
