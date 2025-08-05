@@ -26,7 +26,6 @@ class Game:
         self.check_map = False
         self.new_game()
         self.Sphinx_room = False
-        # print(result)
         # self.switch = True
 
     def new_game(self):  # initialise some stuff
@@ -35,6 +34,7 @@ class Game:
         self.object_renderer = ObjectRenderer(self)
         self.raycasting = RayCasting(self)
         self.object_handler = ObjectHandler(self)
+        self.AI_Sphinx = AI_Sphinx(self)
         # self.static_sprite = SpriteObject(w
         #     self, path="resources/textures/DOOM_bush.png", pos=(1.5, 1.5))
         # self.animated_sprite = AnimatedSprite(
