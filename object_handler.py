@@ -11,11 +11,11 @@ class ObjectHandler:
         self.add_sprite(AnimatedSprite(
             self.game, path="resources/textures/animated_lamp.png", pos=(1.5, 1.5), no_of_rows=1, no_of_cols=6))
         self.add_sprite(AnimatedSprite(
-            self.game, path="resources/textures/animated_lamp.png", pos=(1.5, 4.5), no_of_rows=1, no_of_cols=6))
+            self.game, path="resources/textures/animated_lamp.png", pos=(1.5, 3.5), no_of_rows=1, no_of_cols=6))
         self.add_sprite(AnimatedSprite(
-            self.game, path="resources/textures/animated_lamp.png", pos=(9.5, 1.5), no_of_rows=1, no_of_cols=6))
+            self.game, path="resources/textures/animated_lamp.png", pos=(8.5, 1.5), no_of_rows=1, no_of_cols=6))
         self.add_sprite(AnimatedSprite(
-            self.game, path="resources/textures/animated_lamp.png", pos=(9.5, 4.5), no_of_rows=1, no_of_cols=6))
+            self.game, path="resources/textures/animated_lamp.png", pos=(8.5, 3.5), no_of_rows=1, no_of_cols=6))
         self.add_sprite(AnimatedSprite(
             self.game, path="resources/textures/sphinx.png", pos=(6, 2.0), no_of_rows=1, no_of_cols=18, scale=1.80))
 
