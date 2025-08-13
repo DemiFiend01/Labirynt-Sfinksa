@@ -31,8 +31,8 @@ class AI_Sphinx:
         self.player_responses = deque()
 
         self.top_border_height = HEIGHT * 2/3
-        self.height_of_dialog_box = HEIGHT * 2/6
-        self.length_of_dialog_box = WIDTH * 4/6
+        self.height_of_dialog_box = HEIGHT * 1/3
+        self.length_of_dialog_box = WIDTH * 2/3
         self.quarter_screen_width = WIDTH * 1/6
 
         self.screen = self.game.screen
@@ -63,9 +63,6 @@ class AI_Sphinx:
         self.text_log.append(self.riddles[self.current_riddle][0])
 
     def update(self):
-        # if self.current_riddle > 2:
-        #     self.finished_all_riddles = True
-        #     return
         if self.game.finished_riddles:
             return
 
@@ -89,7 +86,8 @@ class AI_Sphinx:
                     if event.key == pg.K_RETURN:
                         self.is_reading = True
                         self.is_typing = False
-                        self.player_responses.append(self.input_text)
+                        self.player_responses.append(
+                            self.wrap_text(self.input_text))
                         self.generate_judging(
                             self.riddles[self.current_riddle], self.input_text, self.current_riddle)
                         if self.current_riddle > 2:
@@ -97,12 +95,13 @@ class AI_Sphinx:
                             self.finished_all_riddles = True
                         else:
                             self.text_log.append(
-                                self.riddles[self.current_riddle][0])
+                                self.wrap_text(self.riddles[self.current_riddle][0]))
                     elif event.key == pg.K_BACKSPACE:
                         # delete one character
                         self.input_text = self.input_text[:-1]
                     else:
-                        self.input_text += event.unicode  # add the new character to the input text
+                        if len(self.input_text) < 40:
+                            self.input_text += event.unicode  # add the new character to the input text
 
     def wrap_text(self, _text):
         max_width = self.dialog_box.width - 2 * self.font_height
@@ -179,9 +178,6 @@ class AI_Sphinx:
                       f"Zagadkę: {question[0]}."
                       f"Odpowiedź gracza: {answer}."
                       f"Odpowiedź poprawna: {question[1]}."
-                      #   f"{self.personality_type[0]}, uwielbiasz o tym wszystkim opowiadać non stop, naprawdę non stop."
-                      # f"To {number_of_riddle+1} próba (Trzecia - 3 - to ostatnia). "
-                      #   f"Pisząc odpowiedź, używaj kilku zdań. Nie mogą być bardzo długie, ale powinny być normalne i nie za krótkie."
                       f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań."
                       #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
                       f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
