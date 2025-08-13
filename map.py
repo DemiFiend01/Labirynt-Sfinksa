@@ -22,8 +22,8 @@ sphinx_room = [
 class Map:
     def __init__(self, game):
         self.game = game
-        self.width = 21
-        self.height = 21
+        self.width = 17
+        self.height = 17
         self.goal_x, self.goal_y = self.width // 2, self.height // 2
         self.mini_map = self.generate_map(self.height, self.width)
         self.world_map = {}

@@ -8,6 +8,7 @@ class Player:
         self.game = game
         self.x, self.y = PLAYER_POS  # nice assigning from a tuple to two vars here
         self.angle = PLAYER_ANGLE
+        self.rel = 0
 
     def movement(self):
         sin_a = math.sin(self.angle)  # in radians
