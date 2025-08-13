@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from game import *
 from settings import *
 
@@ -16,6 +17,10 @@ class Game_Manager:
         self.window.protocol("WM_DELETE_WINDOW", self.quit)
         self.window.geometry(f'{WIDTH}x{HEIGHT}')
         self.window.state('zoomed')
+        self.style = ttk.Style()
+        self.style.theme_use('alt')
+        self.style.configure("TButton", font=(
+            "Helvetica", 16), foreground='blue', background='violet', padding=5)
         self.main_menu()
 
     def clear_screen(self):
@@ -24,7 +29,7 @@ class Game_Manager:
 
     def main_menu(self):
         self.clear_screen()
-        self.game_button = tk.Button(
+        self.game_button = ttk.Button(
             self.window,
             text="Game",
             command=lambda: self.game_select_menu("normal")
@@ -34,7 +39,7 @@ class Game_Manager:
             ipady=6,
             expand=True
         )
-        self.game_quick_button = tk.Button(
+        self.game_quick_button = ttk.Button(
             self.window,
             text="Quick",
             command=lambda: self.game_select_menu("quick")
@@ -44,7 +49,7 @@ class Game_Manager:
             ipady=6,
             expand=True
         )
-        self.game_quit_button = tk.Button(
+        self.game_quit_button = ttk.Button(
             self.window,
             text="Quit",
             command=lambda: self.quit()
@@ -58,7 +63,7 @@ class Game_Manager:
     def game_select_menu(self, _game_mode):
         self.game_mode = _game_mode
         self.clear_screen()
-        self.game_easy_button = tk.Button(
+        self.game_easy_button = ttk.Button(
             self.window,
             text="Uczeń",
             command=lambda: self.run_game('easy')
@@ -68,7 +73,7 @@ class Game_Manager:
             ipady=6,
             expand=True
         )
-        self.game_hard_button = tk.Button(
+        self.game_hard_button = ttk.Button(
             self.window,
             text="Mistrz",
             command=lambda: self.run_game('hard')
@@ -78,7 +83,7 @@ class Game_Manager:
             ipady=6,
             expand=True
         )
-        self.game_go_back_button = tk.Button(
+        self.game_go_back_button = ttk.Button(
             self.window,
             text="Go back",
             command=lambda: self.main_menu()
