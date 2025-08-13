@@ -21,7 +21,7 @@ class Game:
         pg.init()
         # now we set the resolution of our screen
         self.running = True
-        self.screen = pg.display.set_mode(RES, pg.RESIZABLE)
+        self.screen = pg.display.set_mode(RES, pg.FULLSCREEN)
         self.clock = pg.time.Clock()  # we initialise our clock
         pg.mouse.set_visible(False)
         self.delta_time = 1

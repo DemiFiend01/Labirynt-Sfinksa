@@ -2,8 +2,12 @@ import csv
 import random
 import pygame as pg
 from collections import deque
-from google import genai
-from google.genai import types
+
+#from google import genai
+import google.generativeai as genai
+from google.generativeai import types
+#from google.genai import types
+
 from settings import *
 
 
@@ -12,7 +16,10 @@ class AI_Sphinx:
         # setting up the AI client
         self.api_file = open("resources/api_key.txt")
         self.API_KEY = self.api_file.read()
-        self.client = genai.Client(api_key=self.API_KEY)
+        # self.client = genai.Client(api_key=self.API_KEY)
+        genai.configure(api_key=self.API_KEY)
+        self.model = genai.GenerativeModel("gemini-2.5-flash-lite")
+
 
         # reading all riddles and randomizing their order
         self.game = game
@@ -139,8 +146,35 @@ class AI_Sphinx:
                 writing_text, (self.text_offset[0] + message_width, self.text_offset[1]))
 
     def generate_judging(self, question, answer, number_of_riddle):
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash-lite",
+        # response = self.client.models.generate_content(
+        # response = self.client.models.generate_content( 
+        #     model="gemini-2.5-flash-lite",
+        #     contents=(f"Zachowuj się jak tajemniczy, fantastyczny, niesamowicie {self.personality_type[0]} Sfinks,"
+        #               f"oceniający i analizujący odpowiedź młodego gracza na zagadkę."
+        #               # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
+        #               f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
+        #               f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
+        #               f"Odpowiedź poprawna to jedyna prawdziwa prawidłowa odpowiedź. Sfinks nigdy nie kwestionuje tej odpowiedzi."
+        #               f"Porównaj odpowiedź gracza do odpowiedzi poprawnej i oceniaj wyłącznie na podstawie tej odpowiedzi."
+        #               f"Zagadkę: {question[0]}."
+        #               f"Odpowiedź gracza: {answer}."
+        #               f"Odpowiedź poprawna: {question[1]}."
+        #               #   f"{self.personality_type[0]}, uwielbiasz o tym wszystkim opowiadać non stop, naprawdę non stop."
+        #               # f"To {number_of_riddle+1} próba (Trzecia - 3 - to ostatnia). "
+        #               #   f"Pisząc odpowiedź, używaj kilku zdań. Nie mogą być bardzo długie, ale powinny być normalne i nie za krótkie."
+        #               f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań."
+        #               #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
+        #               f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
+        #               f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
+        #               f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
+        #               ),
+        #     config=types.GenerateContentConfig(
+        #         thinking_config=types.ThinkingConfig(
+        #             thinking_budget=0)  # Disables thinking
+        #     ),
+
+        # )
+        response = self.model.generate_content( 
             contents=(f"Zachowuj się jak tajemniczy, fantastyczny, niesamowicie {self.personality_type[0]} Sfinks,"
                       f"oceniający i analizujący odpowiedź młodego gracza na zagadkę."
                       # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
@@ -160,11 +194,9 @@ class AI_Sphinx:
                       f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
                       f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
                       ),
-            config=types.GenerateContentConfig(
-                thinking_config=types.ThinkingConfig(
-                    thinking_budget=0)  # Disables thinking
-            ),
-
+            generation_config=types.GenerationConfig(
+                temperature=0.7
+            )
         )
         raw_text = response.text
 
