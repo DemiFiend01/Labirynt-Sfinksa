@@ -17,9 +17,10 @@ class Game_Manager:
         self.window.protocol("WM_DELETE_WINDOW", self.quit)
         self.window.geometry(f'{WIDTH}x{HEIGHT}')
         try:
-            self.window.state('zoomed')  # Works on Windows
+            self.window.state('zoomed')  # for windows
         except tk.TclError:
-            self.window.attributes('-fullscreen', True)  # Works on most Linux distros
+            # for laptop and Fedora
+            self.window.attributes('-fullscreen', True)
         self.style = ttk.Style()
         self.style.theme_use('alt')
         self.style.configure("TButton", font=(

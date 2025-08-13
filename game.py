@@ -26,7 +26,8 @@ class Game:
         pg.mouse.set_visible(False)
         self.delta_time = 1
         self.check_map = False
-        self.font = pg.font.Font(None, 32)
+        self.font_size = int(HEIGHT * 0.042)
+        self.font = pg.font.Font(None, self.font_size)
 
         self.quick_game_switch = False if _game_mode == "normal" else True
         self.level = _level
