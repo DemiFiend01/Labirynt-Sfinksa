@@ -5,10 +5,11 @@ from collections import deque
 
 
 class SpriteObject:
-    def __init__(self, game, path, pos, scale=1, shift=0.00):
+    def __init__(self, game, path, pos, scale=1, shift=0.00, Sphinx=False):
         self.game = game
         self.player = game.player
         self.x, self.y = pos
+        self.path = path
         self.image = self.load_texture(path)
         self.IMAGE_WIDTH = self.image[0].get_width()
         self.IMAGE_HALF_WIDTH = self.IMAGE_WIDTH // 2
@@ -19,6 +20,7 @@ class SpriteObject:
         self.SPRITE_HEIGHT_SHIFT = shift
 
         self.is_animated = False
+        self.is_at_Sphinx = Sphinx
 
     def load_texture(self, path):
         base = pg.image.load(path).convert_alpha()
@@ -84,11 +86,15 @@ class SpriteObject:
     def update(self):
         self.get_sprite()
 
+    def draw(self):
+        pg.draw.circle(self.game.screen, 'green',
+                       (self.x * 30, self.y * 30), 7)
+
 
 class AnimatedSprite(SpriteObject):  # inherits from SpriteObject
-    def __init__(self, game, path, pos, no_of_rows, no_of_cols, scale=1.0, shift=0.0, animation_time=120):
+    def __init__(self, game, path, pos, no_of_rows, no_of_cols, scale=1.0, shift=0.0, animation_time=120, Sphinx=False):
         # runs the constructor of the parent class
-        super().__init__(game, path, pos, scale, shift)
+        super().__init__(game, path, pos, scale, shift, Sphinx)
         self.animation_time = animation_time
         self.spritesheet = pg.image.load(path).convert_alpha()
 

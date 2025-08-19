@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 import collections
+from sprite_object import *
 
 _ = False  # for blank/ floor tiles
 N, S, E, W = 1, 2, 4, 8  # bitmasks for directions
@@ -71,19 +72,42 @@ class Map:
                     new_map[goal_x + dir_x//2][goal_y + dir_y//2] = _
                     break  # carve one singular path to it
 
-        def check_from_start_to_goal(s_x, s_y, g_x, g_y):
+        def check_from_start_to_goal(s_x, s_y, g_x, g_y, add_stone):
             # BFS
             visited, queue = set(), collections.deque([(s_x, s_y)])
             visited.add((s_x, s_y))
+            parents = {}
+
+            found = False
 
             while queue:
                 vertex = queue.popleft()
+                if vertex == (g_x, g_y):
+                    found = True
+                    break
                 # vertex unpacking
                 for dx, dy, dir_x, dir_y in return_all_good_neighbours(*vertex):
                     neighbour = (dx - (dir_x//2), dy - (dir_y//2))
                     if new_map[dx - (dir_x//2)][dy - (dir_y//2)] == _ and neighbour not in visited:
                         visited.add(neighbour)
                         queue.append(neighbour)
+                        parents[neighbour] = vertex
+
+            if found and add_stone:
+                path = []
+                node = (g_x, g_y)
+                while node != (s_x, s_y):
+                    path.append(node)
+                    node = parents[node]  # proceed to its parent
+                path.append((s_x, s_y))
+                path.reverse()
+
+                for i, (p_row, p_col) in enumerate(path):
+                    if ((i + 3) % 7) == 0:
+                        p_x = p_col + 1.5  # shift because of borders plus centering
+                        p_y = p_row + 1.5
+                        self.game.object_handler.add_sprite(SpriteObject(
+                            self.game, path="resources/textures/kamyk.png", pos=(p_x, p_y), shift=0.9))
 
             if (g_x, g_y) not in visited:
                 cant_pass = True
@@ -96,11 +120,13 @@ class Map:
                                 new_map[random_x][random_y] = _
                                 cant_pass = False
                                 break
-                check_from_start_to_goal(s_x, s_y, g_x, g_y)
+                check_from_start_to_goal(s_x, s_y, g_x, g_y, add_stone)
 
         generate_path(start_x, start_y)
         check_goal(self.goal_x, self.goal_y)
-        check_from_start_to_goal(start_x, start_y, self.goal_x, self.goal_y)
+
+        check_from_start_to_goal(
+            start_x, start_y, self.goal_x, self.goal_y, add_stone=True)
         # new_map[start_x][start_y] = 2
         # new_map[goal_x][goal_y] = 3
 
@@ -153,7 +179,7 @@ class Map:
                     pg.draw.rect(self.game.screen, color,
                                  (rect_x, rect_y, rect_size, rect_size), 2)
                 elif cell_value == _:
-                    color = 'white'  # Paths are usually empty/dark
+                    color = 'black'  # Paths are usually empty/dark
                     pg.draw.rect(self.game.screen, color,
                                  (rect_x, rect_y, rect_size, rect_size), 2)
                 elif cell_value == 'start':

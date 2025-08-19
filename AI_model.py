@@ -43,8 +43,13 @@ class AI_Sphinx:
         self.text_offset = (self.quarter_screen_width + self.font_height,
                             self.top_border_height + self.font_height)
 
-        self.dialog_box = pg.Rect(self.quarter_screen_width, self.top_border_height,
-                                  self.length_of_dialog_box, self.height_of_dialog_box - 2*self.font_height)
+        self.dialog_box_texture = pg.image.load(
+            "resources/textures/text_box.png").convert_alpha()
+
+        # self.dialog_box = pg.Rect(self.quarter_screen_width, self.top_border_height,
+        #                           self.length_of_dialog_box, self.height_of_dialog_box - 2*self.font_height)
+        self.dialog_box = pg.transform.scale(self.dialog_box_texture, (self.length_of_dialog_box,
+                                                                       self.height_of_dialog_box - 2*self.font_height))
 
         self.text_log = deque()
         self.input_text = ""
@@ -104,7 +109,7 @@ class AI_Sphinx:
                             self.input_text += event.unicode  # add the new character to the input text
 
     def wrap_text(self, _text):
-        max_width = self.dialog_box.width - 2 * self.font_height
+        max_width = self.dialog_box.get_width() - 2 * self.font_height
 
         lines = []
 
@@ -125,12 +130,12 @@ class AI_Sphinx:
     def draw(self):
         if self.game.finished_riddles == True:
             result_line = "Zagadki:"
-            text = self.font.render(result_line, True, (240, 255, 240))
+            text = self.font.render(result_line, True, self.game.font_colour)
             self.screen.blit(text, (self.font_height, self.font_height))
             for i in range(0, 3):
                 result_line = f"{i+1}: " + self.riddles[i][0]
                 text = self.font.render(
-                    result_line, True, (240, 255, 240))
+                    result_line, True, self.game.font_colour)
 
                 self.screen.blit(
                     text, (self.font_height,  2*self.font_height + i * 2.5*self.font_height))
@@ -138,29 +143,31 @@ class AI_Sphinx:
                     self.riddles[i][1] + " Odpowiedź gracza: " + \
                     self.player_responses[i]
                 text = self.font.render(
-                    result_line, True, (240, 255, 240))
+                    result_line, True, self.game.font_colour)
                 self.screen.blit(
                     text, (self.font_height, 2*self.font_height + i * 2.5*self.font_height + self.font_height))
                 pass
             return
 
-        pg.draw.rect(self.screen, (27, 27, 27), self.dialog_box)
+        self.screen.blit(self.dialog_box,
+                         (self.quarter_screen_width, self.top_border_height))
+        # pg.draw.rect(self.screen, (27, 27, 27), self.dialog_box)
         if self.is_reading:
             lines = self.text_log[0].split("\n")
             for i, line in enumerate(lines):
                 reading_text = self.font.render(
-                    line, True, (240, 255, 240))
+                    line, True, self.game.font_colour)
                 self.screen.blit(
                     reading_text, (self.text_offset[0], self.text_offset[1] + i * self.font.get_linesize()))
             # reading_text = self.font.render(
-            #     self.text_log[0], True, (240, 255, 240))
+            #     self.text_log[0], True, self.game.font_colour)
             # self.screen.blit(reading_text, self.text_offset)
 
         elif self.is_typing:
             writing_text = self.font.render(
-                self.input_text, True, (240, 255, 240))
+                self.input_text, True, self.game.font_colour)
             message = self.font.render(
-                "Napisz swoją odpowiedź: ", True, (240, 255, 240))
+                "Napisz swoją odpowiedź: ", True, self.game.font_colour)
             self.screen.blit(message, self.text_offset)
             message_width = message.get_width()
             self.screen.blit(
@@ -168,8 +175,9 @@ class AI_Sphinx:
 
     def generate_judging(self, question, answer, number_of_riddle):
         response = self.model.generate_content(
-            contents=(f"Zachowuj się jak tajemniczy, fantastyczny, niesamowicie {self.personality_type[0]} Sfinks,"
-                      f"oceniający i analizujący odpowiedź młodego gracza na zagadkę."
+
+            contents=(f"Zachowuj się jak tajemnicza, fantastyczna, niesamowicie {self.personality_type[0]} Sfinks,"
+                      f"oceniająca i analizująca odpowiedź młodego gracza na zagadkę."
                       # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
                       f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
                       f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
@@ -178,7 +186,7 @@ class AI_Sphinx:
                       f"Zagadkę: {question[0]}."
                       f"Odpowiedź gracza: {answer}."
                       f"Odpowiedź poprawna: {question[1]}."
-                      f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań."
+                      f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań. Używaj kobiecych zaimków mówiąc o sobie."
                       #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
                       f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
                       f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
@@ -194,22 +202,6 @@ class AI_Sphinx:
             self.all_points += 1
         raw_text = raw_text[5:].strip()
 
-        # char_limit = 80
-        # current_idx = char_limit
-
-        # modified_text = ""
-        # while raw_text:
-        #     if len(raw_text) <= char_limit:
-        #         modified_text += raw_text
-        #         break
-        #     current_idx = char_limit
-        #     while raw_text[current_idx] != ' ':
-        #         current_idx -= 1
-        #         if current_idx < 0:
-        #             break  # error
-        #     modified_text += raw_text[:current_idx+1]+"\n"
-        #     raw_text = raw_text[current_idx+1:]
-        # self.text_log.append(modified_text)
         self.text_log.append(self.wrap_text(raw_text))
         self.current_riddle += 1
         # return completion.choices[0].message.content.strip()

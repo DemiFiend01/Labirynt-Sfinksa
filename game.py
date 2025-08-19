@@ -25,9 +25,17 @@ class Game:
         self.clock = pg.time.Clock()  # we initialise our clock
         pg.mouse.set_visible(False)
         self.delta_time = 1
+
         self.check_map = False
-        self.font_size = int(HEIGHT * 0.042)
-        self.font = pg.font.Font(None, self.font_size)
+        self.help_screen = False
+        self.help_screen_image = pg.image.load(
+            "resources/textures/Sphinx_jak_grac.png").convert_alpha()
+        self.help_screen_image = pg.transform.scale(
+            self.help_screen_image, (WIDTH, HEIGHT))
+
+        self.font_size = int(HEIGHT * 0.028)
+        self.font_colour = "#fcefc9"
+        self.font = pg.font.SysFont('georgia', self.font_size)
 
         self.quick_game_switch = False if _game_mode == "normal" else True
         self.level = _level
@@ -37,11 +45,13 @@ class Game:
         self.run()
 
     def new_game(self):  # initialise some stuff
-        self.map = Map(self)  # because map takes this Game as an argument
-        self.player = Player(self)
         self.object_renderer = ObjectRenderer(self)
-        self.raycasting = RayCasting(self)
+        self.player = Player(self)
         self.object_handler = ObjectHandler(self)
+        self.map = Map(self)  # because map takes this Game as an argument
+
+        self.raycasting = RayCasting(self)
+
         self.AI_Sphinx = AI_Sphinx(self)
         # self.static_sprite = SpriteObject(w
         #     self, path="resources/textures/DOOM_bush.png", pos=(1.5, 1.5))
@@ -51,12 +61,17 @@ class Game:
     def update(self):
         if self.finished_riddles == True:
             self.Sphinx_room = False
+
         if self.Sphinx_room == False:
             self.player.update()
+
         self.raycasting.update()
+        self.object_handler.update()
         if self.Sphinx_room:
-            self.object_handler.update()  # update all objects that are in the sphinx roomsssss
+            # update all objects that are in the sphinx roomsssss
+            self.object_handler.updateSphinx()
             self.AI_Sphinx.update()
+
         # update the clock once per framerate aka 60 fps given
         # update the delta_time, it is a float
         self.delta_time = self.clock.tick(FPS)
@@ -78,13 +93,17 @@ class Game:
         self.screen.fill('black')  # clear the window
         if self.finished_riddles == True:
             reading_text = self.font.render(
-                str(self.AI_Sphinx.all_points)+"/3", True, (240, 255, 240))
+                str(self.AI_Sphinx.all_points)+"/3", True, self.font_colour)
             self.screen.blit(reading_text, (WIDTH//2, HEIGHT//2))
             self.AI_Sphinx.draw()
         else:
             if self.check_map:
                 self.map.draw()
                 self.player.draw()
+                self.object_handler.draw()
+                # self.object_handler.list_all_sprites()
+            elif self.help_screen:
+                self.screen.blit(self.help_screen_image, (0, 0))
             else:
                 self.object_renderer.draw()
 
@@ -108,6 +127,9 @@ class Game:
                 # sys.exit()
             if event.type == pg.KEYDOWN and event.key == pg.K_m and self.Sphinx_room == False:
                 self.check_map = not self.check_map
+
+            if event.type == pg.KEYDOWN and event.key == pg.K_h and self.Sphinx_room == False:
+                self.help_screen = not self.help_screen
 
     def run(self):  # to be changed, because what do you mean while True
         self.running = True
