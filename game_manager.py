@@ -11,7 +11,7 @@ class Game_Manager:
         self.start()
         pass
 
-    def create_new_window(self):
+    def create_new_window(self, restart=False):
         self.window = tk.Tk()
         self.window.title = "Main Menu"
         self.running = True
@@ -25,6 +25,9 @@ class Game_Manager:
         self.window.protocol("WM_DELETE_WINDOW", self.quit)
         self.window.geometry(f'{WIDTH}x{HEIGHT}')
 
+        self.frame = tk.Frame(self.window)
+        self.frame.pack(fill="both", expand=True)
+
         self.window.grid_columnconfigure(0, weight=1)
         self.window.grid_columnconfigure(1, weight=0)
         self.window.grid_columnconfigure(2, weight=5)
@@ -33,6 +36,14 @@ class Game_Manager:
         self.window.grid_rowconfigure(2, weight=1)
         self.window.grid_rowconfigure(3, weight=1)
         self.window.grid_rowconfigure(4, weight=2)
+        # self.frame.grid_columnconfigure(0, weight=1)
+        # self.frame.grid_columnconfigure(1, weight=0)
+        # self.frame.grid_columnconfigure(2, weight=5)
+        # self.frame.grid_rowconfigure(0, weight=5)
+        # self.frame.grid_rowconfigure(1, weight=1)
+        # self.frame.grid_rowconfigure(2, weight=1)
+        # self.frame.grid_rowconfigure(3, weight=1)
+        # self.frame.grid_rowconfigure(4, weight=2)
 
         try:
             self.window.state('fullscreen')  # for windows
@@ -40,11 +51,14 @@ class Game_Manager:
             # for laptop and Fedora
             self.window.attributes('-fullscreen', True)
 
-        self.window.attributes('-transparentcolor', '#ab23ff')
+        # self.window.attributes('-transparentcolor', '#ab23ff')
 
         # self.Label_background = tk.Label(self.window, image=self.background)
+        # no need to create a new label
         self.Label_background = tk.Label(self.window, image=self.background)
         self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
+        self.Label_background.lower()
+
         self.style = ttk.Style()
         self.style.theme_use('alt')
         self.font = ("Georgia", round(20 * self.scale), "bold")
@@ -52,7 +66,11 @@ class Game_Manager:
                              foreground="#452a1b", background="#f8c53a", padding=2)
 
         self.window.bind("<Escape>", lambda e: self.main_menu())
-        self.main_menu()
+
+        if restart:
+            self.main_menu()
+        else:
+            self.results()
 
     def resize_background(self, _choice):
         image = Image.open(self.all_backgrounds[_choice])
@@ -66,13 +84,15 @@ class Game_Manager:
 
     def clear_screen(self):
         for widget in self.window.winfo_children():
-            widget.destroy()
+            if widget != self.Label_background:  # to avoid flashing
+                widget.destroy()
 
     def main_menu(self):
         self.clear_screen()
         self.background = self.resize_background(0)
-        self.Label_background = tk.Label(
-            self.window, image=self.background)
+        # self.Label_background = tk.Label(
+        #     self.window, image=self.background)
+        self.Label_background.configure(image=self.background)
         self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.game_button = ttk.Button(
@@ -117,7 +137,8 @@ class Game_Manager:
         self.game_mode = _game_mode
         self.clear_screen()
         self.background = self.resize_background(0)
-        self.Label_background = tk.Label(self.window, image=self.background)
+        # self.Label_background = tk.Label(self.window, image=self.background)
+        self.Label_background.configure(image=self.background)
         self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.game_easy_button = ttk.Button(
@@ -151,7 +172,8 @@ class Game_Manager:
     def info(self, func, _type):
         self.clear_screen()
         self.background = self.resize_background(1 if _type == "normal" else 3)
-        self.Label_background = tk.Label(self.window, image=self.background)
+        # self.Label_background = tk.Label(self.window, image=self.background)
+        self.Label_background.configure(image=self.background)
         self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.game_go_back_button = ttk.Button(
@@ -180,7 +202,8 @@ class Game_Manager:
         self.clear_screen()
         self.background = self.resize_background(
             2 if self.game_mode == "normal" else 4)
-        self.Label_background = tk.Label(self.window, image=self.background)
+        # self.Label_background = tk.Label(self.window, image=self.background)
+        self.Label_background.configure(image=self.background)
         self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.game_continue_button = ttk.Button(

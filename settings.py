@@ -12,7 +12,7 @@ FPS = 120
 PLAYER_POS = 1.5, 1.5  # on the mini_map
 PLAYER_ANGLE = 0
 PLAYER_SPEED = 0.004
-PLAYER_ROT_SPEED = 0.002  # rotation speed
+PLAYER_ROT_SPEED = 0.004  # rotation speed
 PLAYER_RADIUS = 0.10
 
 MOUSE_SENSITIVITY = 0.0002
