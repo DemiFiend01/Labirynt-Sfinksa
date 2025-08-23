@@ -67,7 +67,7 @@ class Game_Manager:
 
         self.window.bind("<Escape>", lambda e: self.main_menu())
 
-        if restart:
+        if restart == False:
             self.main_menu()
         else:
             self.results()
@@ -223,6 +223,9 @@ class Game_Manager:
 
         self.game_info_button.grid(row=4, column=0, pady=10,
                                    ipadx=self.width_of_button, ipady=self.height_of_button)
+
+    def results(self):
+        pass
 
     def run_game(self, _level):
         self.quit()

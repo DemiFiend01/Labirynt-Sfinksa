@@ -66,11 +66,13 @@ class Game:
             self.player.update()
 
         self.raycasting.update()
-        self.object_handler.update()
+
         if self.Sphinx_room:
             # update all objects that are in the sphinx roomsssss
             self.object_handler.updateSphinx()
             self.AI_Sphinx.update()
+        else:
+            self.object_handler.update()
 
         # update the clock once per framerate aka 60 fps given
         # update the delta_time, it is a float

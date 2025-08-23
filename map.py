@@ -64,7 +64,7 @@ class Map:
 
         def check_goal(goal_x, goal_y):
             for dx, dy, dir_x, dir_y in return_immediate_good_neighbours(goal_x, goal_y):
-                new_map[dx][dy] = 3
+                new_map[dx][dy] = random.randint(3, 4)
 
             for dir_x, dir_y in dirs:
                 dx, dy = goal_x + dir_x, goal_y + dir_y

@@ -8,7 +8,7 @@ class ObjectRenderer:
         self.screen = game.screen
         self.wall_textures = self.loadWallTextures()
         self.sky_image = self.getTexture(
-            'resources/textures/night_sky.png', (WIDTH, HALF_HEIGHT))
+            'resources/textures/sphynx_sky.png', (WIDTH, HALF_HEIGHT))
         self.sky_offset = 0  # because it will depend on our movement
 
     def draw_background(self):
@@ -46,9 +46,10 @@ class ObjectRenderer:
 
     def loadWallTextures(self):
         base_textures = {
-            1: self.getTexture('resources/textures/hedge1.jpg'),
-            2: self.getTexture('resources/textures/STONE3.png'),
-            3: self.getTexture('resources/textures/STONGARG.png')
+            1: self.getTexture('resources/textures/piramid_normal_texture_wall.png'),
+            2: self.getTexture('resources/textures/piramid_normal_texture_wall_broken.png'),
+            3: self.getTexture('resources/textures/piramid_normal_texture_wall_sphinx.png'),
+            4: self.getTexture('resources/textures/piramid_normal_texture_wall_sphinx_broken.png')
         }
 
         brightness_lvls = [0.1 * i for i in range(10)]
