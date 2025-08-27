@@ -27,11 +27,17 @@ class Game:
         self.delta_time = 1
 
         self.check_map = False
+        self.map_background = pg.image.load(
+            "resources/textures/Sphinx_map_back.png").convert_alpha()
+        self.map_background = pg.transform.scale(
+            self.map_background, (WIDTH, HEIGHT))
         self.help_screen = False
         self.help_screen_image = pg.image.load(
             "resources/textures/Sphinx_jak_grac.png").convert_alpha()
         self.help_screen_image = pg.transform.scale(
             self.help_screen_image, (WIDTH, HEIGHT))
+
+        pg.display.set_caption("Labirynt Sfinksa")
 
         self.font_size = int(HEIGHT * 0.028)
         self.font_colour = "#fcefc9"
@@ -61,6 +67,8 @@ class Game:
     def update(self):
         if self.finished_riddles == True:
             self.Sphinx_room = False
+            self.running = False
+            return
 
         if self.Sphinx_room == False:
             self.player.update()
@@ -77,8 +85,8 @@ class Game:
         # update the clock once per framerate aka 60 fps given
         # update the delta_time, it is a float
         self.delta_time = self.clock.tick(FPS)
-        # display the information behind fps on our screen
-        pg.display.set_caption(f'{self.clock.get_fps(): .1f}')
+        # # display the information behind fps on our screen
+        # pg.display.set_caption(f'{self.clock.get_fps(): .1f}')
 
         # or self.switch:
         if (self.player.get_map_pos == (self.map.goal_x + 1, self.map.goal_y+1)) or self.quick_game_switch == True:
@@ -93,24 +101,25 @@ class Game:
 
     def draw(self):  # render
         self.screen.fill('black')  # clear the window
-        if self.finished_riddles == True:
-            reading_text = self.font.render(
-                str(self.AI_Sphinx.all_points)+"/3", True, self.font_colour)
-            self.screen.blit(reading_text, (WIDTH//2, HEIGHT//2))
-            self.AI_Sphinx.draw()
+        # if self.finished_riddles == True:
+        #     reading_text = self.font.render(
+        #         str(self.AI_Sphinx.all_points)+"/3", True, self.font_colour)
+        #     self.screen.blit(reading_text, (WIDTH//2, HEIGHT//2))
+        #     self.AI_Sphinx.draw()
+        # else:
+        if self.check_map:
+            self.screen.blit(self.map_background, (0, 0))
+            self.map.draw()
+            self.player.draw()
+            # self.object_handler.draw()
+            # self.object_handler.list_all_sprites()
+        elif self.help_screen:
+            self.screen.blit(self.help_screen_image, (0, 0))
         else:
-            if self.check_map:
-                self.map.draw()
-                self.player.draw()
-                self.object_handler.draw()
-                # self.object_handler.list_all_sprites()
-            elif self.help_screen:
-                self.screen.blit(self.help_screen_image, (0, 0))
-            else:
-                self.object_renderer.draw()
+            self.object_renderer.draw()
 
-            if self.Sphinx_room:
-                self.AI_Sphinx.draw()
+        if self.Sphinx_room:
+            self.AI_Sphinx.draw()
 
         # self.map.draw()
         pg.display.flip()  # Update the full display Surface to the screen

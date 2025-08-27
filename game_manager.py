@@ -8,16 +8,18 @@ from PIL import Image, ImageTk
 class Game_Manager:
     def __init__(self):
         # self.game = Game()
+        self.show_results = False
         self.start()
         pass
 
-    def create_new_window(self, restart=False):
+    def create_new_window(self):
         self.window = tk.Tk()
         self.window.title = "Main Menu"
         self.running = True
         self.all_backgrounds = ["resources/textures/Sphinx_main_menu.png",
                                 "resources/textures/Sphinx_jak_grac.png", "resources/textures/Sphinx_intro.png",
-                                "resources/textures/Sphinx_jak_grac_szybka_gra.png", "resources/textures/Sphinx_intro_szybka_gra.png"]
+                                "resources/textures/Sphinx_jak_grac_szybka_gra.png", "resources/textures/Sphinx_intro_szybka_gra.png",
+                                "resources/textures/Sphinx_results.png"]
         self.background = self.resize_background(0)
         self.width_of_button = 20 * self.scale
         self.height_of_button = 10 * self.scale
@@ -36,14 +38,6 @@ class Game_Manager:
         self.window.grid_rowconfigure(2, weight=1)
         self.window.grid_rowconfigure(3, weight=1)
         self.window.grid_rowconfigure(4, weight=2)
-        # self.frame.grid_columnconfigure(0, weight=1)
-        # self.frame.grid_columnconfigure(1, weight=0)
-        # self.frame.grid_columnconfigure(2, weight=5)
-        # self.frame.grid_rowconfigure(0, weight=5)
-        # self.frame.grid_rowconfigure(1, weight=1)
-        # self.frame.grid_rowconfigure(2, weight=1)
-        # self.frame.grid_rowconfigure(3, weight=1)
-        # self.frame.grid_rowconfigure(4, weight=2)
 
         try:
             self.window.state('fullscreen')  # for windows
@@ -67,7 +61,7 @@ class Game_Manager:
 
         self.window.bind("<Escape>", lambda e: self.main_menu())
 
-        if restart == False:
+        if self.show_results == False:
             self.main_menu()
         else:
             self.results()
@@ -225,11 +219,77 @@ class Game_Manager:
                                    ipadx=self.width_of_button, ipady=self.height_of_button)
 
     def results(self):
-        pass
+        self.clear_screen()
+        self.background = self.resize_background(5)
+
+        self.Label_background.configure(image=self.background)
+        self.Label_background.place(x=0, y=0, relwidth=1, relheight=1)
+
+        self.game_continue_button = ttk.Button(
+            self.window,
+            text="Kontynuuj",
+            command=lambda: self.main_menu(),
+        )
+        self.game_continue_button.grid(row=4, column=1, pady=10,
+                                       ipadx=self.width_of_button, ipady=self.height_of_button)
+
+        self.riddles_style = ttk.Style()
+        self.riddles_style.configure(
+            "Custom.Treeview",
+            font=("Georgia", round(20 * self.scale)),
+            rowheight=170,
+            background="#9cc694",
+            foreground="#452a1b",
+            fieldbackground="#9cc694",
+            bordercolor="#452a1b",
+            relief="solid",
+            borderwidth=6
+        )
+        self.riddles_style.map(
+            "Custom.Treeview",
+            background=[("selected", "#452a1b")],
+            foreground=[("selected", "white")]
+        )
+
+        self.riddles = ttk.Treeview(
+            self.window,
+            height=3,
+            style="Custom.Treeview",
+
+            selectmode='none'  # The user cannot select items with the mouse
+        )
+
+        self.riddles_style.configure(
+            "Custom.Treeview.Heading",
+            font=("Georgia", round(22 * self.scale), "bold"),
+            background="#452a1b",
+            foreground="white",
+            selectmode='none'
+        )
+
+        self.riddles["columns"] = ("Zagadka", "Twoja odpowiedź", "Wynik")
+        # hide the default column
+        self.riddles.column('#0', width=0, stretch=tk.NO)
+        self.riddles.column("Zagadka", width=int(WIDTH*2/3))
+        self.riddles.column("Twoja odpowiedź", width=int(WIDTH*2/10))
+        self.riddles.column("Wynik", width=int(WIDTH*1/10))
+        self.riddles.heading("Zagadka", text="Zagadka")
+        self.riddles.heading("Twoja odpowiedź", text="Twoja odpowiedź")
+        self.riddles.heading("Wynik", text="Wynik")
+
+        self.riddles.insert("", tk.END, values=(
+            self.game.AI_Sphinx.riddles[0][0], self.game.AI_Sphinx.player_responses[0], self.game.AI_Sphinx.appointed_point[0]))
+        self.riddles.insert("", tk.END, values=(
+            self.game.AI_Sphinx.riddles[1][0], self.game.AI_Sphinx.player_responses[1], self.game.AI_Sphinx.appointed_point[1]))
+        self.riddles.insert("", tk.END, values=(
+            self.game.AI_Sphinx.riddles[2][0], self.game.AI_Sphinx.player_responses[2], self.game.AI_Sphinx.appointed_point[2]))
+
+        self.riddles.grid(row=1, column=1)
 
     def run_game(self, _level):
         self.quit()
         self.game = Game(_level, self.game_mode)
+        self.show_results = self.game.finished_riddles
         self.start()
 
     def quit(self):

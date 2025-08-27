@@ -29,6 +29,7 @@ class Map:
         self.mini_map = self.generate_map(self.height, self.width)
         self.world_map = {}
         self.get_map()
+        self.map_textures = self.get_map_textures()
 
     def generate_map(self, _height, _width):
         start_x, start_y = 0, 0
@@ -64,6 +65,7 @@ class Map:
 
         def check_goal(goal_x, goal_y):
             for dx, dy, dir_x, dir_y in return_immediate_good_neighbours(goal_x, goal_y):
+                # either normal or ruined sphinx wall
                 new_map[dx][dy] = random.randint(3, 4)
 
             for dir_x, dir_y in dirs:
@@ -153,6 +155,20 @@ class Map:
     # [do_something(x) for x in iterable]
     # The list is created and thrown away.
 
+    def get_map_textures(self):
+        map_textures = []
+        self.RECT_SIZE = 35
+        map_textures.append(pg.image.load(
+            "resources/textures/map_wall.png").convert_alpha())
+        map_textures.append(pg.image.load(
+            "resources/textures/map_floor.png").convert_alpha())
+        map_textures.append(pg.image.load(
+            "resources/textures/map_goal.png").convert_alpha())
+        for idx in range(len(map_textures)):
+            map_textures[idx] = pg.transform.scale(
+                map_textures[idx], (self.RECT_SIZE, self.RECT_SIZE))
+        return map_textures
+
     def teleport_to_sphinx(self):
         self.mini_map = sphinx_room
         self.get_map()
@@ -162,31 +178,46 @@ class Map:
             # Iterate through columns (x-coordinates) in the current row
             for _col, cell_value in enumerate(row_values):
                 cell_value = self.mini_map[_row][_col]
-                rect_x = _col * 30
-                rect_y = _row * 30
-                rect_size = 30
+                rect_x = _col * self.RECT_SIZE + \
+                    ((WIDTH // 2) - (1/2 * (self.RECT_SIZE * (self.width + 2))))
+                rect_y = _row * self.RECT_SIZE + (HEIGHT * 1/4)
 
                 if cell_value == 1:
-                    color = 'blue'
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
+
+                    self.game.screen.blit(
+                        self.map_textures[0], (rect_x, rect_y))
+                    # color = 'blue'
+                    # pg.draw.rect(self.game.screen, color,
+                    #              (rect_x, rect_y, rect_size, rect_size), 2)
                 elif cell_value == 2:
-                    color = 'darkblue'  # Example color for wall type 2
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
+                    self.game.screen.blit(
+                        self.map_textures[0], (rect_x, rect_y))
+                    # color = 'darkblue'  # Example color for wall type 2
+                    # pg.draw.rect(self.game.screen, color,
+                    #              (rect_x, rect_y, rect_size, rect_size), 2)
                 elif cell_value == 3:
-                    color = 'pink'  # Example color for wall type 3
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
+                    self.game.screen.blit(
+                        self.map_textures[0], (rect_x, rect_y))
+                elif cell_value == 4:
+                    self.game.screen.blit(
+                        self.map_textures[0], (rect_x, rect_y))
+                    # color = 'pink'  # Example color for wall type 3
+                    # pg.draw.rect(self.game.screen, color,
+                    #              (rect_x, rect_y, rect_size, rect_size), 2)
+                elif (_row, _col) == (self.goal_x + 1, self.goal_y+1):
+                    self.game.screen.blit(
+                        self.map_textures[2], (rect_x, rect_y))
                 elif cell_value == _:
-                    color = 'black'  # Paths are usually empty/dark
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
-                elif cell_value == 'start':
-                    color = 'pink'  # Start point
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
-                elif cell_value == 'goal':
-                    color = 'violet'  # Goal point
-                    pg.draw.rect(self.game.screen, color,
-                                 (rect_x, rect_y, rect_size, rect_size), 2)
+                    self.game.screen.blit(
+                        self.map_textures[1], (rect_x, rect_y))
+                    # color = 'black'  # Paths are usually empty/dark
+                    # pg.draw.rect(self.game.screen, color,
+                    #              (rect_x, rect_y, rect_size, rect_size), 2)
+                # elif cell_value == 'start':
+                #     color = 'pink'  # Start point
+                #     pg.draw.rect(self.game.screen, color,
+                #                  (rect_x, rect_y, rect_size, rect_size), 2)
+                # elif cell_value == 'goal':
+                #     color = 'violet'  # Goal point
+                #     pg.draw.rect(self.game.screen, color,
+                #                  (rect_x, rect_y, rect_size, rect_size), 2)

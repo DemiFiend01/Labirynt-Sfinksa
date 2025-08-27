@@ -57,6 +57,7 @@ class AI_Sphinx:
         self.is_reading = True
         self.finished_all_riddles = False
         self.all_points = 0
+        self.appointed_point = []
 
     def start_riddles(self):
         self.game.player.set_angle(0)
@@ -89,18 +90,19 @@ class AI_Sphinx:
             elif self.is_typing:
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_RETURN:
-                        self.is_reading = True
-                        self.is_typing = False
-                        self.player_responses.append(
-                            self.wrap_text(self.input_text))
-                        self.generate_judging(
-                            self.riddles[self.current_riddle], self.input_text, self.current_riddle)
-                        if self.current_riddle > 2:
-                            self.judge_the_results()
-                            self.finished_all_riddles = True
-                        else:
-                            self.text_log.append(
-                                self.wrap_text(self.riddles[self.current_riddle][0]))
+                        if len(self.input_text):
+                            self.is_reading = True
+                            self.is_typing = False
+                            self.player_responses.append(
+                                self.wrap_text(self.input_text))
+                            self.generate_judging(
+                                self.riddles[self.current_riddle], self.input_text, self.current_riddle)
+                            if self.current_riddle > 2:
+                                self.judge_the_results()
+                                self.finished_all_riddles = True
+                            else:
+                                self.text_log.append(
+                                    self.wrap_text(self.riddles[self.current_riddle][0]))
                     elif event.key == pg.K_BACKSPACE:
                         # delete one character
                         self.input_text = self.input_text[:-1]
@@ -128,27 +130,28 @@ class AI_Sphinx:
         return "\n".join(lines)
 
     def draw(self):
+        # if self.game.finished_riddles == True:
+        #     result_line = "Zagadki:"
+        #     text = self.font.render(result_line, True, self.game.font_colour)
+        #     self.screen.blit(text, (self.font_height, self.font_height))
+        #     for i in range(0, 3):
+        #         result_line = f"{i+1}: " + self.riddles[i][0]
+        #         text = self.font.render(
+        #             result_line, True, self.game.font_colour)
+
+        #         self.screen.blit(
+        #             text, (self.font_height,  2*self.font_height + i * 2.5*self.font_height))
+        #         result_line = " Odpowiedź poprawna: " + \
+        #             self.riddles[i][1] + " Odpowiedź gracza: " + \
+        #             self.player_responses[i]
+        #         text = self.font.render(
+        #             result_line, True, self.game.font_colour)
+        #         self.screen.blit(
+        #             text, (self.font_height, 2*self.font_height + i * 2.5*self.font_height + self.font_height))
+        #         pass
+        #     return
         if self.game.finished_riddles == True:
-            result_line = "Zagadki:"
-            text = self.font.render(result_line, True, self.game.font_colour)
-            self.screen.blit(text, (self.font_height, self.font_height))
-            for i in range(0, 3):
-                result_line = f"{i+1}: " + self.riddles[i][0]
-                text = self.font.render(
-                    result_line, True, self.game.font_colour)
-
-                self.screen.blit(
-                    text, (self.font_height,  2*self.font_height + i * 2.5*self.font_height))
-                result_line = " Odpowiedź poprawna: " + \
-                    self.riddles[i][1] + " Odpowiedź gracza: " + \
-                    self.player_responses[i]
-                text = self.font.render(
-                    result_line, True, self.game.font_colour)
-                self.screen.blit(
-                    text, (self.font_height, 2*self.font_height + i * 2.5*self.font_height + self.font_height))
-                pass
             return
-
         self.screen.blit(self.dialog_box,
                          (self.quarter_screen_width, self.top_border_height))
         # pg.draw.rect(self.screen, (27, 27, 27), self.dialog_box)
@@ -174,32 +177,43 @@ class AI_Sphinx:
                 writing_text, (self.text_offset[0] + message_width, self.text_offset[1]))
 
     def generate_judging(self, question, answer, number_of_riddle):
-        response = self.model.generate_content(
+        generating = True
+        while generating:
+            try:
+                response = self.model.generate_content(
 
-            contents=(f"Zachowuj się jak tajemnicza, fantastyczna, niesamowicie {self.personality_type[0]} Sfinks,"
-                      f"oceniająca i analizująca odpowiedź młodego gracza na zagadkę."
-                      # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
-                      f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
-                      f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
-                      f"Odpowiedź poprawna to jedyna prawdziwa prawidłowa odpowiedź. Sfinks nigdy nie kwestionuje tej odpowiedzi."
-                      f"Porównaj odpowiedź gracza do odpowiedzi poprawnej i oceniaj wyłącznie na podstawie tej odpowiedzi."
-                      f"Zagadkę: {question[0]}."
-                      f"Odpowiedź gracza: {answer}."
-                      f"Odpowiedź poprawna: {question[1]}."
-                      f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań. Używaj kobiecych zaimków mówiąc o sobie."
-                      #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
-                      f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
-                      f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
-                      f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
-                      ),
-            generation_config=types.GenerationConfig(
-                temperature=0.7
-            )
-        )
+                    contents=(f"Zachowuj się jak tajemnicza, fantastyczna, niesamowicie {self.personality_type[0]} Sfinks,"
+                              f"oceniająca i analizująca odpowiedź młodego gracza na zagadkę."
+                              # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
+                              f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
+                              f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
+                              f"Odpowiedź poprawna to jedyna prawdziwa prawidłowa odpowiedź. Sfinks nigdy nie kwestionuje tej odpowiedzi."
+                              f"Porównaj odpowiedź gracza do odpowiedzi poprawnej i oceniaj wyłącznie na podstawie tej odpowiedzi."
+                              f"Zagadkę: {question[0]}."
+                              f"Odpowiedź gracza: {answer}."
+                              f"Odpowiedź poprawna: {question[1]}."
+                              f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań. Używaj kobiecych zaimków mówiąc o sobie."
+                              #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
+                              f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
+                              f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
+                              f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
+                              ),
+                    generation_config=types.GenerationConfig(
+                        temperature=0.7
+                    )
+                )
+                generating = False
+            except Exception as e:
+                print(e)
+                pg.time.wait(1000)
+
         raw_text = response.text
 
         if raw_text.upper().startswith("[TAK]"):
             self.all_points += 1
+            self.appointed_point.append("Dobrze")
+        else:
+            self.appointed_point.append("Źle")
         raw_text = raw_text[5:].strip()
 
         self.text_log.append(self.wrap_text(raw_text))

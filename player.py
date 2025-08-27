@@ -9,6 +9,11 @@ class Player:
         self.x, self.y = PLAYER_POS  # nice assigning from a tuple to two vars here
         self.angle = PLAYER_ANGLE
         self.rel = 0
+        self.rect_size = 35
+        self.texture = pg.image.load(
+            "resources/textures/map_player.png").convert_alpha()
+        self.texture = pg.transform.scale(
+            self.texture, (self.rect_size, self.rect_size))
 
     def movement(self):
         sin_a = math.sin(self.angle)  # in radians
@@ -65,8 +70,10 @@ class Player:
         # pg.draw.line(self.game.screen, 'green', (self.x * 100, self.y * 100),
         #  (self.x * 100 + WIDTH * math.cos(self.angle),
         #   self.y * 100 + WIDTH * math.sin(self.angle)), 2)
-        pg.draw.circle(self.game.screen, 'red',
-                       (self.x * 30, self.y * 30), 7)
+        # pg.draw.circle(self.game.screen, 'red',
+        #                (self.x * 30 + (WIDTH * 1/3), self.y * 30 + (HEIGHT * 1/3)), 7)
+        self.game.screen.blit(
+            self.texture, (self.x * self.rect_size + (WIDTH // 2) - (1/2 * (self.rect_size * (self.game.map.width + 2))) - self.rect_size//2, self.y * self.rect_size + (HEIGHT * 1/4 - self.rect_size//2)))
 
     def mouse_control(self):
         mx, my = pg.mouse.get_pos()
