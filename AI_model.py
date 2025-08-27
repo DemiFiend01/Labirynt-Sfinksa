@@ -178,35 +178,38 @@ class AI_Sphinx:
 
     def generate_judging(self, question, answer, number_of_riddle):
         generating = True
-        while generating:
-            try:
-                response = self.model.generate_content(
+        response = None
+        for i in range(1, 4):
+            if generating:
+                try:
+                    response = self.model.generate_content(
 
-                    contents=(f"Zachowuj się jak tajemnicza, fantastyczna, niesamowicie {self.personality_type[0]} Sfinks,"
-                              f"oceniająca i analizująca odpowiedź młodego gracza na zagadkę."
-                              # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
-                              f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
-                              f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
-                              f"Odpowiedź poprawna to jedyna prawdziwa prawidłowa odpowiedź. Sfinks nigdy nie kwestionuje tej odpowiedzi."
-                              f"Porównaj odpowiedź gracza do odpowiedzi poprawnej i oceniaj wyłącznie na podstawie tej odpowiedzi."
-                              f"Zagadkę: {question[0]}."
-                              f"Odpowiedź gracza: {answer}."
-                              f"Odpowiedź poprawna: {question[1]}."
-                              f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań. Używaj kobiecych zaimków mówiąc o sobie."
-                              #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
-                              f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
-                              f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
-                              f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
-                              ),
-                    generation_config=types.GenerationConfig(
-                        temperature=0.7
+                        contents=(f"Zachowuj się jak tajemnicza, fantastyczna, niesamowicie {self.personality_type[0]} Sfinks,"
+                                  f"oceniająca i analizująca odpowiedź młodego gracza na zagadkę."
+                                  # f"Zachowuj się jak tajemniczy, fantastyczny Sfinks oceniający i analizujący odpowiedź młodego gracza na zagadkę, który."
+                                  f"Nie zadawaj pytań. Nie dodawaj komentarzy dla gracza. Nie mów także, że odpowiedź jest idealna, że się zgadza z odpowiedzią poprawną."
+                                  f"WAŻNE: Akceptuj też niedoskonałe odpowiedzi, które znaczą to samo co poprawna odpowiedź."
+                                  f"Odpowiedź poprawna to jedyna prawdziwa prawidłowa odpowiedź. Sfinks nigdy nie kwestionuje tej odpowiedzi."
+                                  f"Porównaj odpowiedź gracza do odpowiedzi poprawnej i oceniaj wyłącznie na podstawie tej odpowiedzi."
+                                  f"Zagadkę: {question[0]}."
+                                  f"Odpowiedź gracza: {answer}."
+                                  f"Odpowiedź poprawna: {question[1]}."
+                                  f"Pisząc odpowiedź, używaj przynajmniej trzech długich zdań. Używaj kobiecych zaimków mówiąc o sobie."
+                                  #   f"Nie używaj przecinków, myślników ani wielokropek ('...'). "
+                                  f"Odpowiedź musi zaczynać się dokładnie od '[TAK]' lub '[NIE]' bez spacji lub znaków interpunkcyjnych po nich."
+                                  f"Przykład: [TAK]Poprawnie śmiertelniku. Rozpoznałeś się na mojej zagadce, niczym mądra Atena."
+                                  f"Lub: [NIE]Ach, błędny wędrowcze, twoja odpowiedź nie jest tą, której szukam. Nie zrozumiałeś natury mojej zagadki."
+                                  ),
+                        generation_config=types.GenerationConfig(
+                            temperature=0.7
+                        )
                     )
-                )
-                generating = False
-            except Exception as e:
-                print(e)
-                pg.time.wait(1000)
-
+                    generating = False
+                except Exception as e:
+                    print(i, ": An exception has occured", e)
+                    pg.time.wait(1000)
+        if response == None:
+            raw_text = self.manual_judging(question, answer)
         raw_text = response.text
 
         if raw_text.upper().startswith("[TAK]"):
@@ -219,6 +222,14 @@ class AI_Sphinx:
         self.text_log.append(self.wrap_text(raw_text))
         self.current_riddle += 1
         # return completion.choices[0].message.content.strip()
+
+    def manual_judging(self, question, answer):
+        if question[1] == answer:
+            raw_text = "[TAK]Bardzo dobrze śmiałku! Udało ci się odpowiedzieć na moją zagadkę."
+        else:
+            raw_text = "[NIE]Niestety nie jest to poprawna odpowiedź śmiertelniku. Nie o takie podejście mi chodziło."
+
+        return raw_text
 
     def judge_the_results(self):
         response = ""
