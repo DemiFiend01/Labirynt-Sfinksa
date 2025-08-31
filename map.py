@@ -157,7 +157,7 @@ class Map:
 
     def get_map_textures(self):
         map_textures = []
-        self.RECT_SIZE = 35
+        # RECT_SIZE = 15 * (WIDTH//HEIGHT)
         map_textures.append(pg.image.load(
             "resources/textures/map_wall.png").convert_alpha())
         map_textures.append(pg.image.load(
@@ -166,7 +166,7 @@ class Map:
             "resources/textures/map_goal.png").convert_alpha())
         for idx in range(len(map_textures)):
             map_textures[idx] = pg.transform.scale(
-                map_textures[idx], (self.RECT_SIZE, self.RECT_SIZE))
+                map_textures[idx], (RECT_SIZE, RECT_SIZE))
         return map_textures
 
     def teleport_to_sphinx(self):
@@ -178,9 +178,10 @@ class Map:
             # Iterate through columns (x-coordinates) in the current row
             for _col, cell_value in enumerate(row_values):
                 cell_value = self.mini_map[_row][_col]
-                rect_x = _col * self.RECT_SIZE + \
-                    ((WIDTH // 2) - (1/2 * (self.RECT_SIZE * (self.width + 2))))
-                rect_y = _row * self.RECT_SIZE + (HEIGHT * 1/4)
+
+                rect_x = _col * RECT_SIZE + \
+                    ((WIDTH // 2) - (1/2 * (RECT_SIZE * (self.width + 2))))
+                rect_y = _row * RECT_SIZE + (HEIGHT * 1/4)
 
                 if cell_value == 1:
 

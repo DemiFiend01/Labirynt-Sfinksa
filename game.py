@@ -39,7 +39,8 @@ class Game:
 
         pg.display.set_caption("Labirynt Sfinksa")
 
-        self.font_size = int(HEIGHT * 0.028)
+        # self.font_size = int(HEIGHT * 0.028)
+        self.font_size = int(WIDTH * 0.018)
         self.font_colour = "#fcefc9"
         self.font = pg.font.SysFont('georgia', self.font_size)
 
@@ -51,8 +52,9 @@ class Game:
         self.run()
 
     def new_game(self):  # initialise some stuff
-        self.object_renderer = ObjectRenderer(self)
         self.player = Player(self)
+        self.object_renderer = ObjectRenderer(self)
+
         self.object_handler = ObjectHandler(self)
         self.map = Map(self)  # because map takes this Game as an argument
 

@@ -230,7 +230,7 @@ class Game_Manager:
             text="Kontynuuj",
             command=lambda: self.main_menu(),
         )
-        self.game_continue_button.grid(row=4, column=1, pady=10,
+        self.game_continue_button.grid(row=5, column=1, pady=10,
                                        ipadx=self.width_of_button, ipady=self.height_of_button)
 
         self.riddles_style = ttk.Style()
@@ -284,7 +284,7 @@ class Game_Manager:
         self.riddles.insert("", tk.END, values=(
             self.game.AI_Sphinx.riddles[2][0], self.game.AI_Sphinx.player_responses[2], self.game.AI_Sphinx.appointed_point[2]))
 
-        self.riddles.grid(row=1, column=1)
+        self.riddles.grid(row=4, column=1)
 
     def run_game(self, _level):
         self.quit()
